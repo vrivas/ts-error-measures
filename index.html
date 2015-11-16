@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Computing error measures for Time Series Forecasting</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="./js/libs/zepto/zepto.js"></script>
+        <script src="./js/ts-error-measures.js"></script>
+        <style>
+            .columns{
+                clear: both;
+            }
+            .column {
+                width: 15%;
+                float: left;
+            }
+            .final {
+                width: 40%;
+            }
+            .warning {
+                color: red;
+            }
+            textarea {
+                width: 10em;
+                height: 50em;
+            }
+        </style>
+        <script>
+            $(function () {
+                $("#calculate").click(function () {
+                    // Turning every line into a number... just for valid lines
+                    // y for desired data, f for forecasted=yielded data
+                    TSEM.compare( "desired", "yielded", "results");                    
+                });
+            }
+            );
+
+        </script>
+    </head>
+    <body>
+        <h1>Computing error measures for Time Series Forecasting</h1>
+        <div class="columns">
+            <h3>Data</h3>
+            <div class="column">
+                <h4>Desired values</h4>
+                <textarea id="desired"></textarea>
+                <p><span id="msgLeft"></span></p>
+            </div>
+            <div class="column">
+                <h4>Yielded values</h4>
+                <textarea id="yielded"></textarea>
+                <p><span id="msgRight"></span></p>
+            </div>            
+            <div class="column">
+                <h4>Options</h4>
+                <button id="calculate">Calculate</button>
+            </div>
+            <div class="final column">
+                <h3>Error measures</h3>
+                <div id="results"></div>
+            </div>
+        </div>
+    </body>
+</html>
