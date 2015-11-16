@@ -1,2 +1,2 @@
 # ts-errors
-Computing errors for Time Series Forecasting
+Computing errors for Time Series Forecasting with javascript
