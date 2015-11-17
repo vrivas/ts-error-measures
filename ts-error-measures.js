@@ -29,7 +29,7 @@ var TSEM = {
             var f = TSEM.textarea2vector("#" + a);
             // In case of error
             if (tmp = TSEM.anyErrorInData(y.length, f.length)) {
-                $("#"+_idResults).html(tmp);
+                $("#" + _idResults).html(tmp);
                 return;
             }
             // --------------------------------------------------- Showing info to user                  
@@ -49,7 +49,7 @@ var TSEM = {
             msg += TSEM.measure("RMSSE", TSEM.RMSSE(y, f));
             msg += TSEM.measure("MdASE", TSEM.MdASE(y, f));
             msg += "<hr/>\n";
-            $("#"+_idResults).html(msg);
+            $("#" + _idResults).html(msg);
         });
     }
     /**
@@ -122,27 +122,38 @@ var TSEM = {
      * @returns {vector of numbers} Vector containing the different y(t)-f(t)
      */
     , et: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.et: vectors Y (expected) and F (forecasted) have different size";
         return y.map(function (a, i) {
             return y[i] - f[i];
         });
     }
 
     , pt: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.pt: vectors Y (expected) and F (forecasted) have different size";
+
         return this.et(y, f).map(function (a, t) {
-            return 100 * a / y[t]
+            return 100 * a / y[t];
         });
     }
 
     , for_sMAPE: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.fo_sMAPE: vectors Y (expected) and F (forecasted) have different size";
+
         return y.map(function (a, t) {
-            return 200 * Math.abs(y[t] - f[t]) / (y[t] + f[t])
+            return 200 * Math.abs(y[t] - f[t]) / (y[t] + f[t]);
         });
     }
 
 
     , qt: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.qt: vectors Y (expected) and F (forecasted) have different size";
+
         var denom = (1 / (y.length - 1)) * y.reduce(function (prev, a, t) {
-            return (t > 0) ? prev + Math.abs(y[t] - y[t - 1]) : 0
+            return (t > 0) ? prev + Math.abs(y[t] - y[t - 1]) : 0;
         }, 0);
         return this.et(y, f).map(function (a) {
             return (a / denom);
@@ -150,66 +161,104 @@ var TSEM = {
     }
 
     , MSE: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.MSE: vectors Y (expected) and F (forecasted) have different size";
+
         return this.mean(this.et(y, f).map(function (a, i) {
             return Math.pow(a, 2);
         }));
     }
 
     , RMSE: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.RMSE: vectors Y (expected) and F (forecasted) have different size";
         return Math.sqrt(this.MSE(y, f));
     }
 
     , MAE: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.MAE: vectors Y (expected) and F (forecasted) have different size";
+
         return this.mean(this.et(y, f).map(Math.abs));
     }
 
 
     , MdAE: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.MdAE: vectors Y (expected) and F (forecasted) have different size";
+
         return this.median(this.et(y, f).map(Math.abs).sort(this.minus));
     }
 
     , MAPE: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.MAPE: vectors Y (expected) and F (forecasted) have different size";
+
         return  this.mean(this.pt(y, f).map(Math.abs));
     }
 
     , MdAPE: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.MdAPE: vectors Y (expected) and F (forecasted) have different size";
+
         return this.median(this.pt(y, f).map(Math.abs));
     }
 
     , RMSPE: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.RMSPE: vectors Y (expected) and F (forecasted) have different size";
+
         return Math.sqrt(this.mean(this.pt(y, f).map(function (a) {
             return a * a;
         })));
     }
     , RMdSPE: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.RMdSPE: vectors Y (expected) and F (forecasted) have different size";
+
         return Math.sqrt(this.median(this.pt(y, f).map(function (a) {
             return a * a;
         })));
     }
 
-//Symmetric Mean Absolute Percentage Error (sMAPE) = median(200|Yt − Ft|/(Yt + Ft))                    
+    //Symmetric Mean Absolute Percentage Error (sMAPE) = median(200|Yt − Ft|/(Yt + Ft))                    
     , sMAPE: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.sMAPE: vectors Y (expected) and F (forecasted) have different size";
+
         return this.mean(this.for_sMAPE(y, f));
     }
 
-//Symmetric Median Absolute Percentage Error (sMdAPE) = median(200|Yt − Ft|/(Yt + Ft))                    
+    //Symmetric Median Absolute Percentage Error (sMdAPE) = median(200|Yt − Ft|/(Yt + Ft))                    
     , sMdAPE: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.sMdAPE: vectors Y (expected) and F (forecasted) have different size";
+
         return this.median(this.for_sMAPE(y, f));
     }
 
-// Mean Absolute Scaled Error
+    // Mean Absolute Scaled Error
     , MASE: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.MASE: vectors Y (expected) and F (forecasted) have different size";
+
         return this.mean(this.qt(y, f).map(Math.abs));
     }
 
-//Root Mean Squared Scaled Error (RMSSE)
+    //Root Mean Squared Scaled Error (RMSSE)
     , RMSSE: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.RMSSE: vectors Y (expected) and F (forecasted) have different size";
+
         return Math.sqrt(this.mean(this.qt(y, f).map(function (a) {
             return a * a;
         })));
     }
-// Median Absolute Scaled Error (MdASE)
+    // Median Absolute Scaled Error (MdASE)
     , MdASE: function (y, f) {
+        if (y.length !==f.length)
+            throw "Error in TMSE.MdASE: vectors Y (expected) and F (forecasted) have different size";
+
         return this.median(this.qt(y, f).map(Math.abs));
     }
-}
+};
