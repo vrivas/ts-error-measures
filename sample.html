@@ -22,20 +22,24 @@ and open the template in the editor.
             .final {
                 width: 40%;
             }
+            .measures {
+                clear: both;
+            }
             .warning {
                 color: red;
             }
+            .tmse-measure {
+                display: inline;
+            }
             textarea {
                 width: 10em;
-                height: 50em;
+                height: 5em;
             }
         </style>
         <script>
             $(function () {
                 $("#calculate").click(function () {
-                    // Turning every line into a number... just for valid lines
-                    // y for desired data, f for forecasted=yielded data
-                    TSEM.compare( "desired", "yielded", "results");                    
+                    TSEM.compare( $("#problem_name").val(), "desired", "yielded", "results");                    
                 });
             }
             );
@@ -44,6 +48,11 @@ and open the template in the editor.
     </head>
     <body>
         <h1>Computing error measures for Time Series Forecasting</h1>
+        <div>
+            <h3>Problem description</h3>
+            <label for="problem_name">Problem name:</label>
+            <input type="text" value="" id="problem_name" size="50"/>
+        </div>
         <div class="columns">
             <h3>Data</h3>
             <div class="column">
@@ -60,7 +69,9 @@ and open the template in the editor.
                 <h4>Options</h4>
                 <button id="calculate">Calculate</button>
             </div>
-            <div class="final column">
+      </div>
+      <div>
+            <div class="measures">
                 <h3>Error measures</h3>
                 <div id="results"></div>
             </div>

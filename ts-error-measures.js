@@ -21,7 +21,7 @@ var TSEM = {
      * @param {string} _idResults Id of the layer where result will be showed
      * @returns Nothing
      */
-    , compare: function (_idDesired, _idsYielded, _idResults) {
+    , compare: function ( _problem_name, _idDesired, _idsYielded, _idResults) {
         var y = TSEM.textarea2vector("#" + _idDesired);
         var msg = "";
         fs = (Array.isArray(_idsYielded) ? _idsYielded : [_idsYielded]);
@@ -35,21 +35,33 @@ var TSEM = {
             // --------------------------------------------------- Showing info to user                  
             // In case everything is right
             msg += "<h4>" + _idDesired + " vs " + a + "</h4>\n";
-            msg += TSEM.measure("MSE", TSEM.MSE(y, f));
-            msg += TSEM.measure("RMSE", TSEM.RMSE(y, f));
-            msg += TSEM.measure("MAE", TSEM.MAE(y, f));
-            msg += TSEM.measure("MdAE", TSEM.MdAE(y, f));
-            msg += TSEM.measure("MAPE", TSEM.MAPE(y, f));
-            msg += TSEM.measure("MdAPE", TSEM.MdAPE(y, f));
-            msg += TSEM.measure("RMSPE", TSEM.RMSPE(y, f));
-            msg += TSEM.measure("RMdSPE", TSEM.RMdSPE(y, f));
-            msg += TSEM.measure("sMAPE", TSEM.sMAPE(y, f));
-            msg += TSEM.measure("sMdAPE", TSEM.sMdAPE(y, f));
-            msg += TSEM.measure("MASE", TSEM.MASE(y, f));
-            msg += TSEM.measure("RMSSE", TSEM.RMSSE(y, f));
-            msg += TSEM.measure("MdASE", TSEM.MdASE(y, f));
-            msg += "<hr/>\n";
-            $("#" + _idResults).html(msg);
+            for( var h=y.length; h>0; --h ) {
+              var yp=y.slice(0,h);
+              var fp=f.slice(0,h);
+              msg +="Problem: "+_problem_name+" | ";
+              msg +="H: "+h+" | ";
+
+              try {
+                msg += TSEM.showMeasure("MSE",    TSEM.MSE(yp, fp));
+                msg += TSEM.showMeasure("RMSE",   TSEM.RMSE(yp, fp));
+                msg += TSEM.showMeasure("MAE",    TSEM.MAE(yp, fp));
+                msg += TSEM.showMeasure("MdAE",   TSEM.MdAE(yp, fp));
+                msg += TSEM.showMeasure("MAPE",   TSEM.MAPE(yp, fp));
+                msg += TSEM.showMeasure("MdAPE",  TSEM.MdAPE(yp, fp));
+                msg += TSEM.showMeasure("RMSPE",  TSEM.RMSPE(yp, fp));
+                msg += TSEM.showMeasure("RMdSPE", TSEM.RMdSPE(yp, fp));
+                msg += TSEM.showMeasure("sMAPE",  TSEM.sMAPE(yp, fp));
+                msg += TSEM.showMeasure("sMdAPE", TSEM.sMdAPE(yp, fp));
+                msg += TSEM.showMeasure("MASE",   TSEM.MASE(yp, fp));
+                msg += TSEM.showMeasure("RMSSE",  TSEM.RMSSE(yp, fp));
+                msg += TSEM.showMeasure("MdASE",  TSEM.MdASE(yp, fp));
+              } catch (e) {
+                msg+="<span class='warning'>"+e+"</span>";
+              }
+              msg += "<br/>\n";
+          }
+          $("#" + _idResults).html(msg);
+
         });
     }
     /**
@@ -61,7 +73,7 @@ var TSEM = {
      */
 
     , textarea2vector: function (_id) {
-        v = $(_id).val().split(/\r*\n/).map(function (e) {
+        v = $(_id).val().split(/\r*\n| /).map(function (e) {
             return parseFloat(e.replace(",", "."))
         }).filter(function (e) {
             return !isNaN(e)
@@ -70,6 +82,16 @@ var TSEM = {
         return v;
     }
 
+
+    /**
+     * Creates a DIV with a string and a value: MEASURE: value
+     * @param {string} name The name of the measure
+     * @param {number} value The value of the measure
+     * @returns {String} A string with a div (of class tmse-measure) to show the name and the value of the measure
+     */
+    , showMeasure: function (name, value) {
+        return "<span class='tmse-measure'>" + name + ": " + value.toFixed(4) + " | </span>";
+    }
     /**
      * Computes a minus b for sorting purposes
      * @param {number} a First number
@@ -105,15 +127,6 @@ var TSEM = {
         return ((l = v.length) % 2) ? v[Math.floor(l / 2)] : (v[Math.floor(l / 2) - 1] + v[Math.floor(l / 2)]) / 2;
     }
 
-    /**
-     * Creates a DIV with a string and a value: MEASURE: value
-     * @param {string} name The name of the measure
-     * @param {number} value The value of the measure
-     * @returns {String} A string with a div (of class tmse-measure) to show the name and the value of the measure
-     */
-    , measure: function (name, value) {
-        return "<div class='tmse-measure'>" + name + ": " + value + ";</div>";
-    }
 
     /**
      * Computes the vector of errors: e(t)=y(t)-f(t)
