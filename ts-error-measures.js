@@ -21,7 +21,7 @@ var TSEM = {
      * @param {Array of float} fp Yielded outputs
      * @returns {Object} And object composed of any of the different computed measures
      */
-    , setOFErrors: function (yp, fp) {
+    , setOfErrors: function (yp, fp) {
         try {
             return {
                 "MSE": TSEM.MSE(yp, fp)
